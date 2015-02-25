@@ -44,7 +44,7 @@ import mpicbg.stitching.fusion.Fusion;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
-import ome.xml.model.primitives.PositiveFloat;
+import ome.units.quantity.Length;
 import stitching.CommonFunctions;
 import tools.RoiPicker;
 
@@ -899,29 +899,29 @@ public class Stitching_Grid implements PlugIn
 					{
 						// calibration
 						double calX = 1, calY = 1, calZ = 1;
-						PositiveFloat cal;
+						Length cal;
 						final String dimOrder = r.getDimensionOrder().toUpperCase();
 
 						final int posX = dimOrder.indexOf( 'X' );
 						cal = retrieve.getPixelsPhysicalSizeX( series );
-						if ( posX >= 0 && cal != null && cal.getValue().floatValue() != 0 )
-							calX = cal.getValue().floatValue();
+						if ( posX >= 0 && cal != null && cal.value().doubleValue() != 0 )
+							calX = cal.value().doubleValue();
 
 						if ( IJ.debugMode )
 							IJ.log( "calibrationX:  " + calX );
 
 						final int posY = dimOrder.indexOf( 'Y' );
 						cal = retrieve.getPixelsPhysicalSizeY( series );
-						if ( posY >= 0 && cal != null && cal.getValue().floatValue() != 0 )
-							calY = cal.getValue().floatValue();
+						if ( posY >= 0 && cal != null && cal.value().doubleValue() != 0 )
+							calY = cal.value().doubleValue();
 
 						if ( IJ.debugMode )
 							IJ.log( "calibrationY:  " + calY );
 
 						final int posZ = dimOrder.indexOf( 'Z' );
 						cal = retrieve.getPixelsPhysicalSizeZ( series );
-						if ( posZ >= 0 && cal != null && cal.getValue().floatValue() != 0 )
-							calZ = cal.getValue().floatValue();
+						if ( posZ >= 0 && cal != null && cal.value().doubleValue() != 0 )
+							calZ = cal.value().doubleValue();
 
 						if ( IJ.debugMode )
 							IJ.log( "calibrationZ:  " + calZ );
