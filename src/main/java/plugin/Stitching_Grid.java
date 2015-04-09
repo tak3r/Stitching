@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +48,11 @@ import net.imglib2.type.numeric.real.FloatType;
 import ome.xml.model.primitives.PositiveFloat;
 import stitching.CommonFunctions;
 import tools.RoiPicker;
+
+import ij.io.ImageWriter;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.awt.Image;
 
 /**
  * 
@@ -106,6 +112,8 @@ public class Stitching_Grid implements PlugIn
 	public static String[] resultChoices = { "Fuse and display", "Write to disk" };
 	public static int defaultResult = 0;
 	public static String defaultOutputDirectory = "";
+
+	private String inputDirectory;
 	
 	@Override
 	public void run( String arg0 ) 
@@ -290,6 +298,7 @@ public class Stitching_Grid implements PlugIn
 			outputFile = defaultTileConfiguration = gd.getNextString();
 		}
 		
+		this.inputDirectory = directory;
 		params.fusionMethod = defaultFusionMethod = gd.getNextChoiceIndex();
 		params.regThreshold = defaultRegressionThreshold = gd.getNextNumber();
 		params.relativeThreshold = defaultDisplacementThresholdRelative = gd.getNextNumber();		
@@ -602,8 +611,23 @@ public class Stitching_Grid implements PlugIn
 			
 			if ( imp != null )
 			{
+				IJ.log( "Generating final image ..." );
+				Image img = imp.getImage();
+                BufferedImage iimg = (BufferedImage)img;
+                try
+                {
+                    ImageIO.write(iimg, "png", new File(this.inputDirectory + "/output.png"));
+                }
+                catch(Exception ex)
+                {
+                    System.out.println(ex.getMessage());
+                }
+
 				imp.setTitle( "Fused" );
 				imp.show();
+			}
+			else{
+				IJ.log( "Imp is null" );
 			}
 
 			if (addTilesAsRois) {
@@ -1191,6 +1215,7 @@ public class Stitching_Grid implements PlugIn
 		}
 		
 		final String[] imageFiles = dir.list();
+		Arrays.sort(imageFiles);
 		final ArrayList<String> files = new ArrayList<String>();
 		for ( final String fileName : imageFiles )
 		{
