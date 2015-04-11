@@ -177,7 +177,37 @@ public class Stitching_Slide implements PlugIn
     	writeTileConfiguration(new File(directory, defaultTileConfiguration), elements);
 
 		// compute and fuse
-		performPairWiseStitching(images.get(0), images.get(1), params, this.inputDirectory);
+		ImagePlus ci = null;
+		// ImagePlus result = performPairWiseStitching(images.get(0), images.get(1), params, this.inputDirectory);
+		// ImagePlus ci = performPairWiseStitching(result, images.get(2), params, this.inputDirectory);
+		for (final ImagePlus imp : images)
+		{
+			if(ci == null){
+				ci = imp;
+				continue;
+			}
+
+			ci = performPairWiseStitching(ci, imp, params, this.inputDirectory);;
+		}
+
+		if (ci != null)
+		{
+			IJ.log( "Generating final image ..." );
+			Image img = ci.getImage();
+            BufferedImage iimg = (BufferedImage)img;
+            try
+            {
+                ImageIO.write(iimg, "png", new File(inputDirectory + "/output.png"));
+            }
+            catch(Exception ex)
+            {
+                System.out.println(ex.getMessage());
+            }
+
+			ci.setTitle("Fused");
+			// ci.show();
+		}
+
 	}
 
 	protected void writeTileConfiguration(final File file, final ArrayList<ImageCollectionElement> elements)
@@ -518,7 +548,7 @@ public class Stitching_Slide implements PlugIn
 		return output;
 	}
 
-	public static void performPairWiseStitching(final ImagePlus imp1, final ImagePlus imp2, final StitchingParameters params, final String inputDirectory)
+	public static ImagePlus performPairWiseStitching(final ImagePlus imp1, final ImagePlus imp2, final StitchingParameters params, final String inputDirectory)
 	{
 		final ArrayList<InvertibleBoundable> models = new ArrayList< InvertibleBoundable >();
 
@@ -636,25 +666,9 @@ public class Stitching_Slide implements PlugIn
 		else
 			ci = fuse(new UnsignedByteType(), imp1, imp2, models, params);
 		
-		if (ci != null)
-		{
-			IJ.log( "Generating final image ..." );
-			Image img = ci.getImage();
-            BufferedImage iimg = (BufferedImage)img;
-            try
-            {
-                ImageIO.write(iimg, "png", new File(inputDirectory + "/output.png"));
-            }
-            catch(Exception ex)
-            {
-                System.out.println(ex.getMessage());
-            }
-
-			ci.setTitle("Fused");
-			// ci.show();
-		}
-
 		IJ.log( "Finished ... (" + (System.currentTimeMillis() - start) + " ms)");
+
+		return ci;
 	}
 
 	protected static <T extends RealType<T> & NativeType<T>> ImagePlus fuse(final T targetType, final ImagePlus imp1, final ImagePlus imp2, final ArrayList<InvertibleBoundable> models, final StitchingParameters params)
