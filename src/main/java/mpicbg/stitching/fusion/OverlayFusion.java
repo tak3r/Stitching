@@ -33,6 +33,7 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import stitching.utils.CompositeImageFixer;
+import stitching.utils.Log;
 
 public class OverlayFusion 
 {
@@ -56,7 +57,7 @@ public class OverlayFusion
 		// the size of the new image
 		final int[] size = new int[ dimensionality ];
 		// the offset relative to the output image which starts with its local coordinates (0,0,0)
-		final float[] offset = new float[ dimensionality ];
+		final double[] offset = new double[ dimensionality ];
 
 		final int[][] imgSizes = new int[ numImages ][ dimensionality ];
 		
@@ -93,7 +94,7 @@ public class OverlayFusion
 				} 
 				catch (ImgLibException e) 
 				{
-					IJ.log( "Output image has no ImageJ type: " + e );
+					Log.error( "Output image has no ImageJ type: " + e );
 				}				
 			}
 		}
@@ -108,9 +109,9 @@ public class OverlayFusion
 			result = OverlayFusion.switchZCinXYCZT( result );
 			return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
 		}
-		//IJ.log( "ch: " + imp.getNChannels() );
-		//IJ.log( "slices: " + imp.getNSlices() );
-		//IJ.log( "frames: " + imp.getNFrames() );
+		//Log.info( "ch: " + imp.getNChannels() );
+		//Log.info( "slices: " + imp.getNSlices() );
+		//Log.info( "frames: " + imp.getNFrames() );
 		result.setDimensions( imp.getNChannels(), 1, imp.getNFrames() );
 		
 		if ( imp.getNChannels() > 1 )
@@ -131,7 +132,7 @@ public class OverlayFusion
 		// the size of the new image
 		final int[] size = new int[ dimensionality ];
 		// the offset relative to the output image which starts with its local coordinates (0,0,0)
-		final float[] offset = new float[ dimensionality ];
+		final double[] offset = new double[ dimensionality ];
 
 		// estimate the boundaries of the output image and the offset for fusion (negative coordinates after transform have to be shifted to 0,0,0)
 		Fusion.estimateBounds( offset, size, images, models, dimensionality );
@@ -163,7 +164,7 @@ public class OverlayFusion
 				} 
 				catch (ImgLibException e) 
 				{
-					IJ.log( "Output image has no ImageJ type: " + e );
+					Log.error( "Output image has no ImageJ type: " + e );
 				}
 				
 				// count all channels
@@ -195,7 +196,7 @@ public class OverlayFusion
 	 * @param input - FloatType, because of Interpolation that needs to be done
 	 * @param transform - the transformation
 	 */
-	protected static <T extends RealType<T>> void fuseChannel( final Img<T> output, final RealRandomAccessible<FloatType> input, final float[] offset, final InvertibleCoordinateTransform transform )
+	protected static <T extends RealType<T>> void fuseChannel( final Img<T> output, final RealRandomAccessible<FloatType> input, final double[] offset, final InvertibleCoordinateTransform transform )
 	{
 		final int dims = output.numDimensions();
 		long imageSize = output.dimension( 0 );
@@ -226,7 +227,7 @@ public class OverlayFusion
             		final Cursor<T> out = output.localizingCursor();
             		final RealRandomAccess<FloatType> in = input.realRandomAccess();
             		
-            		final float[] tmp = new float[ input.numDimensions() ];
+            		final double[] tmp = new double[ input.numDimensions() ];
             		
             		try 
             		{
@@ -239,7 +240,7 @@ public class OverlayFusion
             				out.fwd();
             				
             				for ( int d = 0; d < dims; ++d )
-            					tmp[ d ] = out.getFloatPosition( d ) + offset[ d ];
+            					tmp[ d ] = out.getDoublePosition( d ) + offset[ d ];
             				
             				transform.applyInverseInPlace( tmp );
             	
@@ -249,7 +250,7 @@ public class OverlayFusion
             		} 
             		catch (NoninvertibleModelException e) 
             		{
-            			IJ.log( "Cannot invert model, qutting." );
+            			Log.error( "Cannot invert model, qutting." );
             			return;
             		}
 
@@ -281,7 +282,7 @@ public class OverlayFusion
 		} 
 		catch (NoninvertibleModelException e) 
 		{
-			IJ.log( "Cannot invert model, qutting." );
+			Log.error( "Cannot invert model, qutting." );
 			return;
 		}
 		*/
