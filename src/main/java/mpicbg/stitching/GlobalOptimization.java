@@ -48,17 +48,17 @@ public class GlobalOptimization
 					if ( params.dimensionality == 3 )
 					{
 						// the transformations that map each tile into the relative global coordinate system (that's why the "-")
-						p1 = new Point( new float[]{ 0,0,0 } );
+						p1 = new Point( new double[]{ 0,0,0 } );
 						
 						if ( ignoreZ )
-							p2 = new Point( new float[]{ -pair.getRelativeShift()[ 0 ], -pair.getRelativeShift()[ 1 ], 0 } );
+							p2 = new Point( new double[]{ -pair.getRelativeShift()[ 0 ], -pair.getRelativeShift()[ 1 ], 0 } );
 						else
-							p2 = new Point( new float[]{ -pair.getRelativeShift()[ 0 ], -pair.getRelativeShift()[ 1 ], -pair.getRelativeShift()[ 2 ] } );
+							p2 = new Point( new double[]{ -pair.getRelativeShift()[ 0 ], -pair.getRelativeShift()[ 1 ], -pair.getRelativeShift()[ 2 ] } );
 					}
 					else 
 					{
-						p1 = new Point( new float[]{ 0, 0 } );
-						p2 = new Point( new float[]{ -pair.getRelativeShift()[ 0 ], -pair.getRelativeShift()[ 1 ] } );						
+						p1 = new Point( new double[]{ 0, 0 } );
+						p2 = new Point( new double[]{ -pair.getRelativeShift()[ 0 ], -pair.getRelativeShift()[ 1 ] } );						
 					}
 					
 					t1.addMatch( new PointMatchStitching( p1, p2, pair.getCrossCorrelation(), pair ) );
@@ -225,8 +225,8 @@ public class GlobalOptimization
 		//::dip Change (29.01.2015)
 		// Shift all tiles
 		TranslationModel2D shiftModel = new TranslationModel2D();
-		float xDiff, yDiff;
-		float[] d = {0f, 0f};
+		double xDiff, yDiff;
+		double[] d = {0, 0};
 		d = referenceImage.getModel().apply( d );
 		xDiff = xOrig - d[0];
 		yDiff = yOrig - d[1];
