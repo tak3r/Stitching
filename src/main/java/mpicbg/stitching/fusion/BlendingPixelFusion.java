@@ -57,8 +57,9 @@ public class BlendingPixelFusion implements PixelFusion
 	public void addValue( final float value, final int imageId, final float[] localPosition ) 
 	{
 		// we are always inside the image, so we do not want 0.0
-		final double weight = Math.max( 0.00001, computeWeight( localPosition, dimensions[ imageId ], border, percentScaling ) );
-		
+		double weight = Math.max( 0.00001, computeWeight( localPosition, dimensions[ imageId ], border, percentScaling ) );
+		double alpha = 3.0;
+		weight = Math.pow(weight, alpha);
 		weightSum += weight;
 		valueSum += value * weight;
 	}

@@ -3,6 +3,7 @@ package plugin;
 import static stitching.CommonFunctions.addHyperLinkListener;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
+import ij.io.FileSaver;
 import ij.ImagePlus;
 import ij.gui.MultiLineLabel;
 import ij.gui.Roi;
@@ -48,11 +49,6 @@ import net.imglib2.type.numeric.real.FloatType;
 import ome.xml.model.primitives.PositiveFloat;
 import stitching.CommonFunctions;
 import tools.RoiPicker;
-
-import ij.io.ImageWriter;
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
-import java.awt.Image;
 
 /**
  * 
@@ -612,16 +608,7 @@ public class Stitching_Grid implements PlugIn
 			if ( imp != null )
 			{
 				IJ.log( "Generating final image ..." );
-				Image img = imp.getImage();
-                BufferedImage iimg = (BufferedImage)img;
-                try
-                {
-                    ImageIO.write(iimg, "png", new File(this.inputDirectory + "/output.png"));
-                }
-                catch(Exception ex)
-                {
-                    System.out.println(ex.getMessage());
-                }
+				new FileSaver( imp ).saveAsJpeg( this.inputDirectory + "/output.jpg" );
 
 				imp.setTitle( "Fused" );
 				imp.show();
@@ -660,6 +647,7 @@ public class Stitching_Grid implements PlugIn
     	// close all images
     	for ( final ImageCollectionElement element : elements )
     		element.close();
+    	System.exit(0);
 	}
 
 	void logger (final String message)
